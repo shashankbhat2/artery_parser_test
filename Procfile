@@ -1,2 +1,2 @@
-web:gunicorn app:artery_test_parser_endpoint
+web: gunicorn app:artery_test_parser_endpoint
 
