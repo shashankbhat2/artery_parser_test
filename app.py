@@ -15,7 +15,7 @@ def parseEmails():
     response = "Email Parsed"
     parser = TestEmailParsers(data)
     name = parser.getEmailSenderName()
-    if name['Name'] == "Cult Fit":
+    if name['Name'] == "Shashank Bhat":
         parsedEmail = parser.parseCareFit()
         return (parsedEmail, 200, None)
     else:
