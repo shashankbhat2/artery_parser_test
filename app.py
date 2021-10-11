@@ -18,11 +18,14 @@ def parseEmails():
     if name['Name'] == "Cult Fit":
         parsedEmail = parser.parseCareFit()
         return (parsedEmail, 200, None)
+    elif name['Name'] == 'Aktiv Health':
+        parsedEmail = parser.parseAktivHealth()
+        return (parsedEmail, 200, None)
     else:
         response = "Could'nt Parse Email"
         return (response, 400, None)
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0",port=5000,debug=True,use_reloader=True)
 

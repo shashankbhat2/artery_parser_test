@@ -28,9 +28,33 @@ class TestEmailParsers:
         time = str(re.findall(r'\d{1,2}:\d{2}', consultation_string)[0]) 
         link = str(re.findall(r'https://orion.curefit.co.*[a-zA-Z0-9_.+-]', text)[0])
         self.consultation_time.append(str(datetime.strptime(time, '%H:%M').time()))
-        self.consultation['date'] = datetime.strptime(date, '%d %b %Y')
+        self.consultation['date'] = str(datetime.strptime(date, '%d %b %Y').date())
         self.consultation['time'] = self.consultation_time
         self.consultation['link'] = link
         self.consultation['site'] = site
+        self.consultation['doctorEmail'] = self.getEmailReciever()
+        return self.consultation
+
+    def parseAktivHealth(self):
+        text = self.getEmailTextBody()
+        site = self.inbound.sender()['Name']
+        date = re.findall(r'Date : .*[0-9]', text)
+        day = re.findall(r'Day : .*[a-zA-Z]', text)
+        time = re.findall(r'Appointment Time \(From & To\) : .*[0-9AM|PM]', text)
+        link = re.findall(r'https://teams.microsoft.com.*[a-zA-Z0-9_.+-]', text)
+        consult_time = re.sub(r'Appointment Time \(From & To\) :', '', time[0]).strip()
+        consultation_date = re.sub(r'Date : ', '', date[0])
+        consultation_day = re.sub(r'Day : ', '', day[0])
+        consultation_link = link[0]
+        from_time = re.sub(r' - .*[0-9AM|PM]', '', consult_time)
+        to_time_string =  re.sub(r'[0-9].* - ', '', consult_time)
+        to_time = re.sub(r'[AM|PM]', '', to_time_string).strip()
+        self.consultation_time.append(str(datetime.strptime(from_time, '%H.%M').time()))
+        self.consultation_time.append(str(datetime.strptime(to_time, '%H.%M').time()))
+        self.consultation['site'] = site
+        self.consultation['day'] = str(consultation_day)
+        self.consultation['date'] = str(datetime.strptime(consultation_date, '%d-%m-%Y').date())
+        self.consultation['link'] = str(consultation_link)
+        self.consultation['time'] = self.consultation_time
         self.consultation['doctorEmail'] = self.getEmailReciever()
         return self.consultation
