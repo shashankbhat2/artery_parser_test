@@ -1,6 +1,6 @@
 from flask import Flask, request
 from email_parser_test import TestEmailParsers
-
+import requests
 app = Flask(__name__)
 
 
@@ -14,18 +14,11 @@ def parseEmails():
     data = request.data
     response = "Email Parsed"
     parser = TestEmailParsers(data)
-    name = parser.getEmailSenderName()
-    if name['Name'] == "Cult Fit":
-        parsedEmail = parser.parseCareFit()
-        return (parsedEmail, 200, None)
-    elif name['Name'] == 'Aktiv Health':
-        parsedEmail = parser.parseAktivHealth()
-        return (parsedEmail, 200, None)
-    else:
-        response = "Could'nt Parse Email"
-        return (response, 400, None)
+    name = parser.getEmailSenderName()['Name']
+    consultation = parser.runParser(name)
+    requests.post('http://localhost:3000/api/scheduler', data=consultation)
+    return ("Success", 200, None)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=5000,debug=True,use_reloader=True)
-
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=True)
